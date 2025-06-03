@@ -43,5 +43,5 @@ The goal is to set up a complete WordPress website running on a LEMP stack insid
 ---
 
 ## 🧑‍💻 Author
-Project developed as part of the 42 Common Core.
+Project developed as part of the 42 Common Core.  
 Developed by [machouba](https://github.com/Machoub) 
