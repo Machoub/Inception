@@ -1,0 +1,69 @@
+services:
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    image: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/wordpress
+    env_file:
+      - .env
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    restart: unless-stopped
+  
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    image: wordpress
+    expose:
+      - "9000"
+    volumes:
+      - wordpress:/var/www/wordpress
+    env_file:
+      - .env
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - inception
+    restart: unless-stopped
+  
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    image: mariadb
+    expose:
+      - "3306"
+    volumes:
+      - mariadb:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - inception
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p42"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  wordpress:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/machouba/data/wordpress'
+  mariadb:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/machouba/data/mariadb'
+networks:
+  inception:
+    driver: bridge
